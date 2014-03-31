@@ -5,7 +5,8 @@ from autopkglib import Processor, ProcessorError
 import os
 import subprocess
 from xml.etree import ElementTree
-from distutils import version
+import re
+import FoundationPlist
 
 __all__ = ["MunkiServerImporter"]
 
@@ -39,21 +40,27 @@ class MunkiServerImporter(Processor):
 			"required": False,
 			"description": "Corresponds to the name key in the pkginfo.",
 		},
-		"version_comparison_key": {
+		"pkginfo": {
 			"required": False,
-			"description": ("String to set 'version_comparison_key' for "
-				"any generated installs items."),
+			"description": ("Dictionary of pkginfo keys to override in the "
+			"generated pkginfo."),
 		},
 	}
 	output_variables = {
-		
+		"edit_url" : {
+			"description" : ("The MunkiServer URL where the package can be "
+			"edited manually.")
+		}
 	}
 	
-	cookiejar = '/tmp/autopkg.cookies'
+	cookiejar = None
 	def curl(self, url, opt = [], data = {}):
 		options = opt[:]
 		for k in data:
-			options.append('-F')
+			if data[k].startswith('<'): # send the < literally, don't load a file from a path
+				options.append('--form-string')
+			else:
+				options.append('-F')
 			options.append('%s=%s' % (k, data[k]))
 		
 		options += ['-s']
@@ -63,7 +70,9 @@ class MunkiServerImporter(Processor):
 		return subprocess.check_output(['/usr/bin/curl'] + options)
 	
 	def munkiserver_login(self):
-		os.unlink(self.cookiejar)
+		self.cookiejar = os.path.join(self.env['RECIPE_CACHE_DIR'], 'cookiejar')
+		if os.path.exists(self.cookiejar):
+			os.unlink(self.cookiejar)
 		
 		data = {}
 		data['username'] = self.env['MUNKISERVER_USER']
@@ -82,15 +91,26 @@ class MunkiServerImporter(Processor):
 		if resp.find('Munki Server: index') <= 0 and resp.find('/dashboard">redirected') <= 0:
 			raise ProcessorError('Login to MunkiServer failed')
 	
+	def munkiserver_version_already_exists(self):
+		if not 'version' in self.env:
+			return False
+		url = self.env['MUNKISERVER_ADDR'] + '/default/packages/%s/%s' % (self.env['NAME'], self.env['version'])
+		try:
+			self.curl(url)
+			self.env['edit_url'] = url
+			return True
+		except:
+			return False
+	
 	def munkiserver_upload_package(self):
 		data = {}
 		data['package_file'] = '@' + self.env["pkg_path"]
 		data['commit'] = 'Upload'
 		if 'munkiimport_pkgname' in self.env:
 			data['makepkginfo_options[pkgname]'] = self.env["munkiimport_pkgname"]
-		if 'munkiimport_pkgname' in self.env:
+		if 'munkiimport_appname' in self.env:
 			data['makepkginfo_options[appname]'] = self.env["munkiimport_appname"]
-		if not 'munkiimport_pkgname' in self.env:
+		if not 'munkiimport_pkgname' in self.env: # MunkiServer expects this parameter to exist even if it's empty
 			self.env["munkiimport_name"] = ''
 		data['makepkginfo_options[name]'] = self.env["munkiimport_name"]
 		
@@ -107,13 +127,70 @@ class MunkiServerImporter(Processor):
 		# now perform the upload
 		url = self.env['MUNKISERVER_ADDR'] + '/default/packages'
 		resp = self.curl(url, options, data)
+		# check for error
+		xml = ElementTree.fromstring(resp)
+		for msg in xml.findall(".//{http://www.w3.org/1999/xhtml}div[@class='message error']"):
+			if 'Version has already been taken' in msg.text:
+				return False
+			raise ProcessorError(msg.text)
+		
+		# get the redirect URL
+		self.env['edit_url'] = re.match('.*You are being.*(http.*)".*redirected.*',resp).group(1)
+		if not self.env['edit_url'].endswith('/edit'):
+			raise ProcessorError('Invalid edit redirect URL received after upload.')
+		
+		return True
+	
+	def munkiserver_edit_package(self):
+		if not 'pkginfo' in self.env or len(self.env['pkginfo']) == 0:
+			return
+			
+		# request the edit form
+		url = self.env['edit_url']
+		resp = self.curl(url)
+		if resp.find('Munki Server: edit') <= 0:
+			raise ProcessorError('Do not have permission to edit packages in MunkiServer')
+		# extract the CSRF token
+		xml = ElementTree.fromstring(resp)
+		ct = xml.find(".//{http://www.w3.org/1999/xhtml}meta[@name='csrf-token']")
+		options = ['-H', 'X-CSRF-Token: ' + ct.attrib['content']]
+		
+		# compose the list
+		data = {}
+		for key in self.env["pkginfo"]:
+			if key == 'receipts' or key == 'installs' or key == 'raw_tags':
+				key += '_plist'
+			if hasattr(self.env['pkginfo'][key], "__len__") and not hasattr(self.env['pkginfo'][key], "endswith"):
+				# it's a non-scalar type but not a string, so it's a plist
+				value = FoundationPlist.writePlistToString(self.env['pkginfo'][key])
+			else:
+				value = self.env['pkginfo'][key]
+			data["package[%s]" % key] = value
+		
+		# change the parameter
+		options += ['-X', 'PUT']
+		url = url[:-5]
+		resp = self.curl(url, options, data)
+		# check for error
 		xml = ElementTree.fromstring(resp)
 		for msg in xml.findall(".//{http://www.w3.org/1999/xhtml}div[@class='message error']"):
 			raise ProcessorError(msg.text)
+		
+		# get the redirect URL
+		if 'version' in self.env["pkginfo"] or 'name' in self.env["pkginfo"]:
+			self.env['edit_url'] = re.match('.*You are being.*(http.*)".*redirected.*',resp).group(1)
 	
 	def main(self):
 		if not self.env["pkg_path"].endswith('.dmg'):
 			raise ProcessorError("Only DMGs are accepted by MunkiServer.")
+		if 'pkginfo' in self.env and 'name' in self.env["pkginfo"]:
+			raise ProcessorError('The name key must not be overridden in pkginfo. To override the name, set the munkiimport_name variable instead.')
 		
 		self.munkiserver_login()
-		self.munkiserver_upload_package()
+		if self.munkiserver_version_already_exists():
+			self.output('Item %s already exists at %s' % (self.env['NAME'], self.env['edit_url']))
+			return
+		if not self.munkiserver_upload_package():
+			self.output('Item %s already exists' % (self.env['NAME']))
+			return
+		self.munkiserver_edit_package()

@@ -5,11 +5,11 @@
 		<key>Description</key>
 		<string>Downloads the latest Google Chrome disk image and imports into MunkiServer.</string>
 		<key>Identifier</key>
-		<string>com.github.autopkg.munkiserver.google-chrome</string>
+		<string>com.github.mkuron.munkiserver.googlechrome</string>
 		<key>Input</key>
 		<dict>
 			<key>NAME</key>
-			<string>GoogleChrome</string>
+			<string>Chrome</string>
 		</dict>
 		<key>MinimumVersion</key>
 		<string>0.2.0</string>
