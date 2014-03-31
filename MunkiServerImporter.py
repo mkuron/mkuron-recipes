@@ -80,7 +80,7 @@ class MunkiServerImporter(Processor):
 		url = self.env['MUNKISERVER_ADDR'] + '/create_session'
 		resp = self.curl(url, data=data)
 		if resp.find('Munki Server: index') <= 0 and resp.find('/dashboard">redirected') <= 0:
-			raise Exception('Login to MunkiServer failed')
+			raise ProcessorError('Login to MunkiServer failed')
 	
 	def munkiserver_upload_package(self):
 		data = {}
@@ -98,7 +98,7 @@ class MunkiServerImporter(Processor):
 		url = self.env['MUNKISERVER_ADDR'] + '/default/packages/add'
 		resp = self.curl(url)
 		if resp.find('Munki Server: new') <= 0:
-			raise Exception('Do not have permission to upload new packages to MunkiServer')
+			raise ProcessorError('Do not have permission to upload new packages to MunkiServer')
 		# extract the CSRF token
 		xml = ElementTree.fromstring(resp)
 		ct = xml.find(".//{http://www.w3.org/1999/xhtml}meta[@name='csrf-token']")
@@ -109,11 +109,11 @@ class MunkiServerImporter(Processor):
 		resp = self.curl(url, options, data)
 		xml = ElementTree.fromstring(resp)
 		for msg in xml.findall(".//{http://www.w3.org/1999/xhtml}div[@class='message error']"):
-			raise Exception(msg.text)
+			raise ProcessorError(msg.text)
 	
 	def main(self):
 		if not self.env["pkg_path"].endswith('.dmg'):
-			raise Exception("Only DMGs are accepted by MunkiServer.")
+			raise ProcessorError("Only DMGs are accepted by MunkiServer.")
 		
 		self.munkiserver_login()
 		self.munkiserver_upload_package()
