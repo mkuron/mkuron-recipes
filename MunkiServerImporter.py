@@ -62,6 +62,7 @@ class MunkiServerImporter(Processor):
 			else:
 				options.append('-F')
 			options.append('%s=%s' % (k, data[k]))
+
 		
 		options += ['-s']
 		options += ['-b', self.cookiejar]
@@ -96,7 +97,9 @@ class MunkiServerImporter(Processor):
 			return False
 		url = self.env['MUNKISERVER_ADDR'] + '/default/packages/%s/%s' % (self.env['NAME'], self.env['version'])
 		try:
-			self.curl(url)
+			resp = self.curl(url)
+			if '404.html' in resp:
+				return False
 			self.env['edit_url'] = url
 			return True
 		except:

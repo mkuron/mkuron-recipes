@@ -22,6 +22,8 @@
 			<dict>
 				<key>archive_path</key>
 				<string>%pathname%</string>
+				<key>archive_format</key>
+				<string>tar_bzip2</string>
 				<key>destination_path</key>
 				<string>%RECIPE_CACHE_DIR%/%NAME%</string>
 				<key>purge_destination</key>

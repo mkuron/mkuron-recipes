@@ -26,16 +26,16 @@
 				<string>Install Adobe Flash Player.app/Contents/Resources/Adobe Flash Player.pkg</string>
 				<key>munkiimport_name</key>
 				<string>%NAME%</string>
+				<key>pkginfo</key>
+				<dict>
+					<key>postinstall_script</key>
+					<string>#!/bin/bash
+/bin/launchctl unload /Library/LaunchDaemons/com.adobe.fpsaud.plist
+rm -f /Library/LaunchDaemons/com.adobe.fpsaud.plist</string>
+				</dict>
 			</dict>
 			<key>Processor</key>
 			<string>MunkiServerImporter</string>
-			<key>pkginfo</key>
-			<dict>
-				<key>postinstall_script</key>
-				<string>#!/bin/bash
-/bin/launchctl unload /Library/LaunchDaemons/com.adobe.fpsaud.plist
-rm -f /Library/LaunchDaemons/com.adobe.fpsaud.plist</string>
-			</dict>
 		</dict>
 	</array>
 </dict>

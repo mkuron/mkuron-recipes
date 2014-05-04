@@ -1,1 +1,0 @@
-../RecipeRepos/com.github.jessepeterson.autopkg-recipes/NVIDIA/CUDADriverURLProvider.py
