@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>Downloads latest release version of Oracle Java 8 JDK and imports into a Munki repository.</string>
+    <key>Identifier</key>
+    <string>com.github.mkuron.OracleJava8JDK.munki</string>
+    <key>Input</key>
+    <dict>
+        <key>NAME</key>
+        <string>OracleJava8JDK</string>
+        <key>MUNKI_REPO_SUBDIR</key>
+        <string>utility/Oracle</string>
+        <key>pkginfo</key>
+        <dict>
+            <key>catalogs</key>
+            <array>
+                <string>testing</string>
+            </array>
+            <key>category</key>
+            <string>Utility</string>
+            <key>developer</key>
+            <string>Oracle</string>
+            <key>description</key>
+            <string>The JDK is a development environment for building applications, applets, and components using the Java programming language. The JDK includes tools useful for developing and testing programs written in the Java programming language and running on the Java platform.</string>
+            <key>display_name</key>
+            <string>Oracle Java 8 development kit</string>
+        	<key>minimum_os_version</key>
+        	<string>10.7.4</string>
+            <key>name</key>
+            <string>%NAME%</string>
+            <key>unattended_install</key>
+            <true/>
+            <key>unattended_uninstall</key>
+            <true/>
+            <key>supported_architectures</key>
+			<array>
+			   <string>i386</string>
+			   <string>x86_64</string>
+			</array>
+        </dict>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>0.2.0</string>
+    <key>ParentRecipe</key>
+    <string>com.github.hansen-m.download.OracleJava8JDK</string>
+    <key>Process</key>
+    <array>
+		<!-- Get version, e.g. 1.8.0_xx -->
+        <dict>
+        	<key>Processor</key>
+        	<string>FlatPkgUnpacker</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>flat_pkg_path</key>
+        		<string>%pathname%/*.pkg</string>
+        		<key>destination_path</key>
+        		<string>%RECIPE_CACHE_DIR%/unpack</string>
+        	</dict>
+        </dict>
+        <dict>
+        	<key>Processor</key>
+        	<string>FileFinder</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>pattern</key>
+        		<string>%RECIPE_CACHE_DIR%/unpack/jdk*.pkg/Payload</string>
+        	</dict>
+        </dict>
+        <dict>
+        	<key>Processor</key>
+        	<string>PkgPayloadUnpacker</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>pkg_payload_path</key>
+        		<string>%found_filename%</string>
+        		<key>destination_path</key>
+        		<string>%RECIPE_CACHE_DIR%/jdk</string>
+        		<key>purge_destination</key>
+        		<true/>
+        	</dict>
+        </dict>
+        <dict>
+        	<key>Processor</key>
+        	<string>PlistReader</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>info_path</key>
+        		<string>%RECIPE_CACHE_DIR%/jdk/Contents/Info.plist</string>
+        		<key>plist_keys</key>
+        		<dict>
+        			<key>CFBundleVersion</key>
+        			<string>version</string>
+        		</dict>
+        	</dict>
+        </dict>
+		<!-- Get plugin version, e.g. 1.8.xx.yy -->
+        <dict>
+        	<key>Processor</key>
+        	<string>PkgPayloadUnpacker</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>pkg_payload_path</key>
+        		<string>%RECIPE_CACHE_DIR%/unpack/javaappletplugin.pkg/Payload</string>
+        		<key>destination_path</key>
+        		<string>%RECIPE_CACHE_DIR%/plugin</string>
+        		<key>purge_destination</key>
+        		<true/>
+        	</dict>
+        </dict>
+        <dict>
+        	<key>Processor</key>
+        	<string>PlistReader</string>
+        	<key>Arguments</key>
+        	<dict>
+        		<key>info_path</key>
+        		<string>%RECIPE_CACHE_DIR%/plugin/Contents/Info.plist</string>
+        		<key>plist_keys</key>
+        		<dict>
+        			<key>CFBundleVersion</key>
+        			<string>plugin_version</string>
+        		</dict>
+        	</dict>
+        </dict>
+		<!-- Import into Munki -->
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>additional_pkginfo</key>
+				<dict>
+					<key>version</key>
+					<string>%plugin_version%</string>
+					<key>postinstall_script</key>
+					<string>#!/bin/sh
+JAVADIR=/Library/Application\ Support/Oracle/Java/Deployment
+if [ ! -d "$JAVADIR" ]; then
+	/bin/mkdir -p "$JAVADIR"
+fi
+
+/bin/echo "deployment.macosx.check.update=false" &gt; "$JAVADIR/deployment.properties"
+
+launchctl unload /Library/LaunchAgents/com.oracle.java.Java-Updater.plist
+launchctl unload /Library/LaunchDaemons/com.oracle.java.Helper-Tool.plist
+
+rm -f /Library/LaunchAgents/com.oracle.java.Java-Updater.plist
+rm -f /Library/LaunchDaemons/com.oracle.java.Helper-Tool.plist
+					</string>
+					<key>installs</key>
+					<array>
+						<dict>
+							<key>path</key>
+							<string>/Library/Java/JavaVirtualMachines/jdk%version%.jdk/Contents/Info.plist</string>
+							<key>type</key>
+							<string>file</string>
+						</dict>
+						<dict>
+							<key>CFBundleVersion</key>
+							<string>%plugin_version%</string>
+							<key>path</key>
+							<string>/Library/Internet Plug-Ins/JavaAppletPlugin.plugin</string>
+							<key>type</key>
+							<string>bundle</string>
+							<key>version_comparison_key</key>
+							<string>CFBundleVersion</string>
+						</dict>
+						<dict>
+							<key>path</key>
+							<string>/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/release</string>
+							<key>type</key>
+							<string>file</string>
+						</dict>
+					</array>
+				</dict>
+			</dict>
+			<key>Processor</key>
+            <string>MunkiPkginfoMerger</string>
+		</dict>
+        <dict>
+            <key>Arguments</key>
+            <dict>
+                <key>pkg_path</key>
+                <string>%pathname%</string>
+                <key>repo_subdirectory</key>
+                <string>%MUNKI_REPO_SUBDIR%</string>
+            </dict>
+            <key>Processor</key>
+            <string>MunkiImporter</string>
+        </dict>
+    </array>
+</dict>
+</plist>
