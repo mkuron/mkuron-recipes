@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>description</key>
+	<string>Downloads latest NVIDIA CUDA Driver and imports into Munki.
+
+Set MAJOR_OS_VERSION to the version of OS X that will be evaluated against
+NVIDIA&apos;s feed of available driver downloads for various OS versions.
+
+The resultant pkginfo will automatically have its &apos;minimum_os_version&apos;
+pkginfo set according to the lowest OS version supported by the
+found driver download.</string>
+	<key>ParentRecipe</key>
+	<string>com.github.jessepeterson.download.CUDADriver</string>
+	<key>Input</key>
+	<dict>
+		<key>IDENTIFIER</key>
+		<string>com.github.mkuron.munki.CUDADriver</string>
+		<key>MUNKI_REPO_SUBDIR</key>
+		<string>drivers</string>
+		<key>MUNKI_CATEGORY</key>
+		<string>Drivers</string>
+		<key>NAME</key>
+		<string>CUDADriver</string>
+		<key>pkginfo</key>
+		<dict>
+			<key>category</key>
+			<string>%MUNKI_CATEGORY%</string>
+			<key>display_name</key>
+			<string>NVIDIA CUDA Driver</string>
+			<key>developer</key>
+			<string>NVIDIA Corporation</string>
+			<key>description</key>
+			<string>The NVIDIA CUDA driver allows access to GPU processing for applications.</string>
+			<key>name</key>
+			<string>%NAME%</string>
+			<key>RestartAction</key>
+			<string>RequireLogout</string>
+		</dict>
+	</dict>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiPkginfoMerger</string>
+			<key>Arguments</key>
+			<dict>
+				<key>additional_pkginfo</key>
+				<dict>
+					<key>minimum_os_version</key>
+					<string>%minimum_os_version%</string>
+					<key>version</key>
+					<string>%version%</string>
+					<key>postinstall_script</key>
+					<string>#!/bin/bash
+rm -f /Library/LaunchAgents/com.nvidia.CUDASoftwareUpdate.plist</string>
+					<key>installs</key>
+					<array>
+						<dict>
+							<key>CFBundleShortVersionString</key>
+							<string>%version%</string>
+							<key>path</key>
+							<string>/Library/Frameworks/CUDA.framework/Resources/Info.plist</string>
+							<key>type</key>
+							<string>plist</string>
+						</dict>
+					</array>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiImporter</string>
+			<key>Arguments</key>
+			<dict>
+				<key>pkg_path</key>
+				<string>%pathname%</string>
+				<key>repo_subdirectory</key>
+				<string>%MUNKI_REPO_SUBDIR%</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

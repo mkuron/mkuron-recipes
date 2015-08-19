@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>DESCRIPTION HERE!</string>
+	<string></string>
 	<key>Identifier</key>
 	<string>com.github.mkuron.munki.DjView</string>
 	<key>Input</key>
@@ -44,6 +44,10 @@ DjVuLibre is an open source (GPL'ed) implementation of DjVu, including viewers, 
                 <string>%pathname%</string>
 				<key>repo_subdirectory</key>
 				<string>%MUNKI_REPO_SUBDIR%</string>
+				<key>additional_makepkginfo_options</key>
+                <array>
+                    <string>--pkgvers=%version%</string>
+                </array>
 			</dict>
 			<key>Processor</key>
 			<string>MunkiImporter</string>
