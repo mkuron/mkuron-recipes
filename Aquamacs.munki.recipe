@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>Uploads Aquamacs into Munki</string>
+	<key>Identifier</key>
+	<string>com.github.mkuron.munki.Aquamacs</string>
+	<key>Input</key>
+	<dict>
+		<key>MUNKI_CATEGORY</key>
+		<string>Application</string>
+		<key>MUNKI_REPO_SUBDIR</key>
+		<string>apps/Aquamacs</string>
+		<key>pkginfo</key>
+		<dict>
+			<key>catalogs</key>
+			<array>
+				<string>testing</string>
+			</array>
+			<key>category</key>
+			<string>%MUNKI_CATEGORY%</string>
+			<key>description</key>
+			<string>The Emacs for the Mac. An Editor for Text, HTML, LaTeX, C++, Java, Python, R, Perl, Ruby, PHP, and more... Aquamacs is a modern editor based on GNU Emacs.</string>
+			<key>developer</key>
+			<string>davidswelt</string>
+			<key>display_name</key>
+			<string>Aquamacs</string>
+			<key>name</key>
+			<string>%NAME%</string>
+			<key>unattended_install</key>
+			<true/>
+		</dict>
+	</dict>
+	<key>ParentRecipe</key>
+	<string>com.github.mkuron.download.Aquamacs</string>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+                <key>pkg_path</key>
+                <string>%pathname%</string>
+				<key>repo_subdirectory</key>
+				<string>%MUNKI_REPO_SUBDIR%</string>
+			</dict>
+			<key>Processor</key>
+			<string>MunkiImporter</string>
+		</dict>
+	</array>
+</dict>
+</plist>
