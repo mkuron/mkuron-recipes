@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Description</key>
+	<string>Downloads the latest version of VMD.</string>
+	<key>Identifier</key>
+	<string>com.github.mkuron.download.VMD</string>
+	<key>Input</key>
+	<dict>
+		<key>NAME</key>
+		<string>VMD</string>
+	</dict>
+	<key>MinimumVersion</key>
+	<string>0.2.0</string>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Processor</key>
+			<string>URLTextSearcher</string>
+			<key>Arguments</key>
+			<dict>
+				<key>url</key>
+				<string>http://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD</string>
+				<key>re_pattern</key>
+				<string>We recommend that all users upgrade to VMD ([0-9\.a-z]+)</string>
+				<key>result_output_var_name</key>
+				<string>version</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>URLTextSearcher</string>
+			<key>Arguments</key>
+			<dict>
+				<key>url</key>
+				<string>http://www.ks.uiuc.edu/Research/vmd/vmd-%version%/files/final/</string>
+				<key>re_pattern</key>
+				<string>(vmd.*?macx86.dmg)</string>
+				<key>result_output_var_name</key>
+				<string>filename</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>URLDownloader</string>
+			<key>Arguments</key>
+			<dict>
+				<key>url</key>
+				<string>http://www.ks.uiuc.edu/Research/vmd/vmd-%version%/files/final/%filename%</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>EndOfCheckPhase</string>
+		</dict>
+	</array>
+</dict>
+</plist>
