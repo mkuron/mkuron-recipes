@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Identifier</key>
+	<string>com.github.mkuron.munki.Xcode</string>
+	<key>Input</key>
+	<dict>
+		<key>MUNKI_REPO_SUBDIR</key>
+		<string>apps/appstore</string>
+		<key>NAME</key>
+		<string>Xcode</string>
+		<key>PATH</key>
+		<string>/Applications/Xcode.app</string>
+		<key>pkginfo</key>
+		<dict>
+			<key>catalogs</key>
+			<array>
+				<string>testing</string>
+			</array>
+			<key>display_name</key>
+			<string>%NAME%</string>
+			<key>name</key>
+			<string>%NAME%</string>
+			<key>unattended_install</key>
+			<true/>
+			<key>postinstall_script</key>
+			<string>#!/bin/bash
+
+/usr/sbin/installer -pkg /Applications/Xcode.app/Contents/Resources/Packages/MobileDevice.pkg -target /
+/usr/sbin/installer -pkg /Applications/Xcode.app/Contents/Resources/Packages/MobileDeviceDevelopment.pkg -target /
+
+# accept the license
+/Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license accept
+
+# disable docset updating
+/usr/bin/defaults write /Library/Preferences/com.apple.dt.Xcode kXCDocCheckAndInstallUpdatesAutomatically -bool NO
+
+# Enable developer mode policies
+/usr/sbin/DevToolsSecurity -enable
+
+# Add a group to developer group
+/usr/sbin/dseditgroup -o edit -a everyone -t group _developer
+
+# Install Command Line Tools
+touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+pkgname=$(softwareupdate --list | grep -A 1 '*' | grep -B 1 'Command Line' | head -n 1 | awk '{print $2}')
+softwareupdate --install $pkgname
+result=$?
+rm /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+exit $result
+</string>
+		</dict>
+	</dict>
+	<key>ParentRecipe</key>
+	<string>com.github.nmcspadden.munki.appstore</string>
+</dict>
+</plist>
