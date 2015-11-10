@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>Uploads Aquamacs into Munki</string>
+	<string>Loads the newest Version of LaTeXiT to munki</string>
 	<key>Identifier</key>
-	<string>com.github.mkuron.munki.Aquamacs</string>
+	<string>com.github.mkuron.munki.LaTeXiT</string>
 	<key>Input</key>
 	<dict>
 		<key>MUNKI_CATEGORY</key>
-		<string>Application</string>
+		<string>TeX</string>
 		<key>MUNKI_REPO_SUBDIR</key>
-		<string>apps/Aquamacs</string>
+		<string>apps/LaTeXiT</string>
 		<key>pkginfo</key>
 		<dict>
 			<key>catalogs</key>
@@ -21,26 +21,28 @@
 			<key>category</key>
 			<string>%MUNKI_CATEGORY%</string>
 			<key>description</key>
-			<string>The Emacs for the Mac. An Editor for Text, HTML, LaTeX, C++, Java, Python, R, Perl, Ruby, PHP, and more... Aquamacs is a modern editor based on GNU Emacs.</string>
+			<string>Should LaTeXiT be categorized, it would be an equation editor. This is not the plain truth, since LaTeXiT is "simply" a graphical interface above a LaTeX engine. However, its large set of features is a reason to see it as an editor; this is the goal in fact.</string>
 			<key>developer</key>
-			<string>davidswelt</string>
+			<string>Pierre Chatelier</string>
 			<key>display_name</key>
-			<string>Aquamacs</string>
+			<string>LaTeXiT</string>
 			<key>name</key>
 			<string>%NAME%</string>
 			<key>unattended_install</key>
 			<true/>
 		</dict>
 	</dict>
+	<key>MinimumVersion</key>
+	<string>0.4.3</string>
 	<key>ParentRecipe</key>
-	<string>com.github.hansen-m.download.aquamacs</string>
+	<string>com.github.scriptingosx.download.LaTeXiT</string>
 	<key>Process</key>
 	<array>
 		<dict>
 			<key>Arguments</key>
 			<dict>
-                <key>pkg_path</key>
-                <string>%pathname%</string>
+				<key>pkg_path</key>
+				<string>%pathname%</string>
 				<key>repo_subdirectory</key>
 				<string>%MUNKI_REPO_SUBDIR%</string>
 			</dict>
