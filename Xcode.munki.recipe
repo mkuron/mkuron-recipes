@@ -29,6 +29,7 @@
 
 /usr/sbin/installer -pkg /Applications/Xcode.app/Contents/Resources/Packages/MobileDevice.pkg -target /
 /usr/sbin/installer -pkg /Applications/Xcode.app/Contents/Resources/Packages/MobileDeviceDevelopment.pkg -target /
+/usr/sbin/installer -pkg /Applications/Xcode.app/Contents/Resources/Packages/XcodeSystemResources.pkg -target /
 
 # accept the license
 /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -license accept
