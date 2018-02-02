@@ -36,7 +36,7 @@
 				<key>url</key>
 				<string>http://www.ks.uiuc.edu/Research/vmd/vmd-%version%/files/final/</string>
 				<key>re_pattern</key>
-				<string>(vmd.*?macx86.dmg)</string>
+				<string>(vmd.*?macx86nocuda.dmg)</string>
 				<key>result_output_var_name</key>
 				<string>filename</string>
 			</dict>
