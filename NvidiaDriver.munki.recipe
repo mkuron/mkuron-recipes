@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>description</key>
+	<string>Downloads latest NVIDIA Web Driver and imports into Munki.</string>
+	<key>ParentRecipe</key>
+	<string>com.github.mkuron.download.NvidiaDriver</string>
+	<key>Identifier</key>
+	<string>com.github.mkuron.munki.NvidiaDriver</string>
+	<key>Input</key>
+	<dict>
+		<key>MUNKI_REPO_SUBDIR</key>
+		<string>drivers</string>
+		<key>MUNKI_CATEGORY</key>
+		<string>Drivers</string>
+		<key>NAME</key>
+		<string>NvidiaDriver</string>
+		<key>pkginfo</key>
+		<dict>
+			<key>category</key>
+			<string>%MUNKI_CATEGORY%</string>
+			<key>display_name</key>
+			<string>NVIDIA Web Driver</string>
+			<key>developer</key>
+			<string>NVIDIA Corporation</string>
+			<key>name</key>
+			<string>%NAME%</string>
+			<key>RestartAction</key>
+			<string>RequireRestart</string>
+		</dict>
+	</dict>
+	<key>Process</key>
+	<array>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiPkginfoMerger</string>
+			<key>Arguments</key>
+			<dict>
+				<key>additional_pkginfo</key>
+				<dict>
+                                        <key>installable_condition</key>
+                                        <string>(os_build == "%build1%")</string>
+					<key>version</key>
+					<string>%version1%</string>
+                                        <key>postinstall_script</key>
+                                        <string>#!/bin/bash
+rm -f /Library/LaunchAgents/com.nvidia.nvagent.plist
+nvram nvda_drv=1</string>
+                                        <key>minimum_os_version</key>
+                                        <string>%os1%</string>
+                                        <key>maximum_os_version</key>
+                                        <string>%os1%</string>
+                                        <key>installs</key>
+                                        <array>
+                                                <dict>
+                                                        <key>CFBundleGetInfoString</key>
+                                                        <string>NVDAStartupWeb %version1%</string>
+                                                        <key>path</key>
+                                                        <string>/Library/Extensions/NVDAStartupWeb.kext</string>
+                                                        <key>type</key>
+                                                        <string>bundle</string>
+                                                        <key>version_comparison_key</key>
+                                                        <string>CFBundleGetInfoString</string>
+                                                </dict>
+                                        </array>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiImporter</string>
+			<key>Arguments</key>
+			<dict>
+				<key>pkg_path</key>
+				<string>%RECIPE_CACHE_DIR%/downloads/%NAME%-%version1%.pkg</string>
+				<key>repo_subdirectory</key>
+				<string>%MUNKI_REPO_SUBDIR%</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiPkginfoMerger</string>
+			<key>Arguments</key>
+			<dict>
+				<key>additional_pkginfo</key>
+				<dict>
+                                        <key>installable_condition</key>
+                                        <string>(os_build == "%build2%")</string>
+					<key>version</key>
+					<string>%version2%</string>
+                                        <key>postinstall_script</key>
+                                        <string>#!/bin/bash
+rm -f /Library/LaunchAgents/com.nvidia.nvagent.plist
+nvram nvda_drv=1</string>
+                                        <key>minimum_os_version</key>
+                                        <string>%os2%</string>
+                                        <key>maximum_os_version</key>
+                                        <string>%os2%</string>
+                                        <key>installs</key>
+                                        <array>
+                                                <dict>
+                                                        <key>CFBundleGetInfoString</key>
+                                                        <string>NVDAStartupWeb %version2%</string>
+                                                        <key>path</key>
+                                                        <string>/Library/Extensions/NVDAStartupWeb.kext</string>
+                                                        <key>type</key>
+                                                        <string>bundle</string>
+                                                        <key>version_comparison_key</key>
+                                                        <string>CFBundleGetInfoString</string>
+                                                </dict>
+                                        </array>
+
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiImporter</string>
+			<key>Arguments</key>
+			<dict>
+				<key>pkg_path</key>
+				<string>%RECIPE_CACHE_DIR%/downloads/%NAME%-%version2%.pkg</string>
+				<key>repo_subdirectory</key>
+				<string>%MUNKI_REPO_SUBDIR%</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiPkginfoMerger</string>
+			<key>Arguments</key>
+			<dict>
+				<key>additional_pkginfo</key>
+				<dict>
+                                        <key>installable_condition</key>
+                                        <string>(os_build == "%build3%")</string>
+					<key>version</key>
+					<string>%version3%</string>
+                                        <key>postinstall_script</key>
+                                        <string>#!/bin/bash
+rm -f /Library/LaunchAgents/com.nvidia.nvagent.plist
+nvram nvda_drv=1</string>
+                                        <key>minimum_os_version</key>
+                                        <string>%os3%</string>
+                                        <key>maximum_os_version</key>
+                                        <string>%os3%</string>
+                                        <key>installs</key>
+                                        <array>
+                                                <dict>
+                                                        <key>CFBundleGetInfoString</key>
+                                                        <string>NVDAStartupWeb %version3%</string>
+                                                        <key>path</key>
+                                                        <string>/Library/Extensions/NVDAStartupWeb.kext</string>
+                                                        <key>type</key>
+                                                        <string>bundle</string>
+                                                        <key>version_comparison_key</key>
+                                                        <string>CFBundleGetInfoString</string>
+                                                </dict>
+                                        </array>
+
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Processor</key>
+			<string>MunkiImporter</string>
+			<key>Arguments</key>
+			<dict>
+				<key>pkg_path</key>
+				<string>%RECIPE_CACHE_DIR%/downloads/%NAME%-%version3%.pkg</string>
+				<key>repo_subdirectory</key>
+				<string>%MUNKI_REPO_SUBDIR%</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
