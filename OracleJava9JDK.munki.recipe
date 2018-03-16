@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>Description</key>
-    <string>Downloads latest release version of Oracle Java 8 JDK and imports into a Munki repository.</string>
+    <string>Downloads latest release version of Oracle Java 9 JDK and imports into a Munki repository.</string>
     <key>Identifier</key>
-    <string>com.github.mkuron.OracleJava8JDK.munki</string>
+    <string>com.github.mkuron.OracleJava9JDK.munki</string>
     <key>Input</key>
     <dict>
         <key>NAME</key>
-        <string>OracleJava8JDK</string>
+        <string>OracleJava9JDK</string>
         <key>MUNKI_REPO_SUBDIR</key>
         <string>utility/Oracle</string>
         <key>pkginfo</key>
@@ -25,9 +25,9 @@
             <key>description</key>
             <string>The JDK is a development environment for building applications, applets, and components using the Java programming language. The JDK includes tools useful for developing and testing programs written in the Java programming language and running on the Java platform.</string>
             <key>display_name</key>
-            <string>Oracle Java 8 development kit</string>
+            <string>Oracle Java 9 development kit</string>
         	<key>minimum_os_version</key>
-        	<string>10.8.3</string>
+        	<string>10.10</string>
             <key>name</key>
             <string>%NAME%</string>
             <key>unattended_install</key>
@@ -36,7 +36,6 @@
             <true/>
             <key>supported_architectures</key>
 			<array>
-			   <string>i386</string>
 			   <string>x86_64</string>
 			</array>
         </dict>
@@ -44,7 +43,7 @@
     <key>MinimumVersion</key>
     <string>0.2.0</string>
     <key>ParentRecipe</key>
-    <string>com.github.hansen-m.download.OracleJava8JDK</string>
+    <string>com.github.hansen-m.download.OracleJava9JDK</string>
     <key>Process</key>
     <array>
 		<!-- Get version, e.g. 1.8.0_xx -->
@@ -150,7 +149,7 @@ rm -f /Library/LaunchDaemons/com.oracle.java.Helper-Tool.plist
 					<array>
 						<dict>
 							<key>path</key>
-							<string>/Library/Java/JavaVirtualMachines/jdk%version%.jdk/Contents/Info.plist</string>
+							<string>/Library/Java/JavaVirtualMachines/jdk-%version%.jdk/Contents/Info.plist</string>
 							<key>type</key>
 							<string>file</string>
 						</dict>
