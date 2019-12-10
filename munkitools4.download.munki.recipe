@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
     <key>Description</key>
-    <string>Downloads and imports version 3 of the Munki tools via
+    <string>Downloads and imports version 4 of the Munki tools via
 the official releases listing on GitHub.</string>
     <key>Identifier</key>
-    <string>com.github.physcip.munki.munkitools3</string>
+    <string>com.github.physcip.munki.munkitools4</string>
     <key>Input</key>
     <dict>
         <key>INCLUDE_PRERELEASES</key>
