@@ -52,39 +52,39 @@ class NvidiaDriverURLProvider(Processor):
 		except:
 			raise ProcessorError('Could not read NVIDIA plist file %s' % plist_filename)
 
-                result = []
+				result = []
 
-                result.append( plist['updates'][0]['downloadURL'] )
-                result.append( plist['updates'][0]['version'] )
-                result.append( plist['updates'][0]['OS'] )
-                result.append( plist['updates'][1]['downloadURL'] )
-                result.append( plist['updates'][1]['version'] )
-                result.append( plist['updates'][1]['OS'] )
+				result.append( plist['updates'][0]['downloadURL'] )
+				result.append( plist['updates'][0]['version'] )
+				result.append( plist['updates'][0]['OS'] )
+				result.append( plist['updates'][1]['downloadURL'] )
+				result.append( plist['updates'][1]['version'] )
+				result.append( plist['updates'][1]['OS'] )
 
-                current_major = int(plist['updates'][0]['OS'][:2])
-                for update in plist['updates'][2:]:
-                    major = int(update['OS'][:2])
-                    if major < current_major:
-                        result.append( update['downloadURL'] )
-                        result.append( update['version'] )
-                        result.append( update['OS'] )
-                        break
+				current_major = int(plist['updates'][0]['OS'][:2])
+				for update in plist['updates'][2:]:
+					major = int(update['OS'][:2])
+					if major < current_major:
+						result.append( update['downloadURL'] )
+						result.append( update['version'] )
+						result.append( update['OS'] )
+						break
 
 		return result
 
-        def build_to_ver(self, build):
-                major = 10
-                minor = int(build[:2])-4
-                patch = ord(build[2])-65
-                return "%d.%d.%d" % (major,minor,patch)
+		def build_to_ver(self, build):
+			major = 10
+			minor = int(build[:2])-4
+			patch = ord(build[2])-65
+			return "%d.%d.%d" % (major,minor,patch)
 
 	def main(self):
-                result = self.get_url()
+		result = self.get_url()
 
 		self.env['url1'], self.env['url2'], self.env['url3'] = result[0::3]
 		self.env['version1'], self.env['version2'], self.env['version3'] = result[1::3]
 		self.env['build1'], self.env['build2'], self.env['build3'] = result[2::3]
-                self.env['os1'], self.env['os2'], self.env['os3'] = self.build_to_ver(self.env['build1']), self.build_to_ver(self.env['build2']), self.build_to_ver(self.env['build3'])
+		self.env['os1'], self.env['os2'], self.env['os3'] = self.build_to_ver(self.env['build1']), self.build_to_ver(self.env['build2']), self.build_to_ver(self.env['build3'])
 		self.output('File URL %s, Version number %s, macOS %s build %s' % (self.env['url1'], self.env['os1'], self.env['version1'], self.env['build1']))
 		self.output('File URL %s, Version number %s, macOS %s build %s' % (self.env['url2'], self.env['os2'], self.env['version2'], self.env['build2']))
 		self.output('File URL %s, Version number %s, macOS %s build %s' % (self.env['url3'], self.env['os3'], self.env['version3'], self.env['build3']))
