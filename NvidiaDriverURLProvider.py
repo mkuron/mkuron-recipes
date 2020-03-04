@@ -14,7 +14,7 @@ PLIST_FN  = 'nvidia_driver_macos.plist'
 class NvidiaDriverURLProvider(Processor):
 	'''Provides URL to the latest Web Driver download from NVIDIA.'''
 
-        input_variables = {}
+	input_variables = {}
 
 	output_variables = {
 		'url1': {
