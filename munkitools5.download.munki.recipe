@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>Downloads and imports version 5 of the Munki tools via
+the official releases listing on GitHub.</string>
+    <key>Identifier</key>
+    <string>com.github.physcip.munki.munkitools4</string>
+    <key>Input</key>
+    <dict>
+        <key>INCLUDE_PRERELEASES</key>
+        <string></string>
+        <key>NAME</key>
+        <string>munkitools5</string>
+        <key>MUNKI_CATALOG</key>
+        <string>testing</string>
+        <key>MUNKI_REPO_SUBDIR</key>
+        <string>munkitools</string>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>0.2.4</string>
+    <key>Process</key>
+    <array>
+        <dict>
+            <key>Processor</key>
+            <string>GitHubReleasesInfoProvider</string>
+            <key>Arguments</key>
+            <dict>
+                <key>asset_regex</key>
+                <string>^munkitools-5.*?pkg$</string>
+                <key>github_repo</key>
+                <string>munki/munki</string>
+                <key>include_prereleases</key>
+                <string>%INCLUDE_PRERELEASES%</string>
+            </dict>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>URLDownloader</string>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>EndOfCheckPhase</string>
+        </dict>
+        <dict>
+            <key>Processor</key>
+            <string>MunkiImporter</string>
+            <key>Arguments</key>
+            <dict>
+                <key>repo_subdirectory</key>
+                <string>%MUNKI_REPO_SUBDIR%</string>
+                <key>pkg_path</key>
+                <string>%pathname%</string>
+                <key>pkginfo</key>
+                <dict>
+                    <key>catalogs</key>
+                    <array>
+                        <string>%MUNKI_CATALOG%</string>
+                    </array>
+                    <key>minimum_os_version</key>
+                    <string>10.10.0</string>
+                </dict>
+            </dict>
+        </dict>
+    </array>
+</dict>
+</plist>
