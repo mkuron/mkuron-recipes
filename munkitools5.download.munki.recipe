@@ -6,7 +6,7 @@
     <string>Downloads and imports version 5 of the Munki tools via
 the official releases listing on GitHub.</string>
     <key>Identifier</key>
-    <string>com.github.physcip.munki.munkitools4</string>
+    <string>com.github.physcip.munki.munkitools5</string>
     <key>Input</key>
     <dict>
         <key>INCLUDE_PRERELEASES</key>
